@@ -12,7 +12,7 @@ from matplotlib.colors import *
 from matplotlib.ticker import MultipleLocator, AutoMinorLocator
 from cycler import cycler
 from collections import OrderedDict
-
+import matplotlib.pyplot as plt
 
 from builtins import zip
 
@@ -314,6 +314,7 @@ class StandardStyle(SimplePlot):
         pylab.rcParams['axes.prop_cycle'] = cycler('color',[self.color_cycle[c] for c in sorted(self.color_cycle.keys())])
 
 
+
     def pre_plot(self):
         pass
 
@@ -329,19 +330,15 @@ class StandardStyle(SimplePlot):
         if self.x_scale:
             if self.x_scale_base:
                 x_scale_params['base'] = self.x_scale_base
-            if self.x_scale_base:
-                x_scale_params['linthresh'] = self.x_scale_linthresh
-            if self.x_scale_base:
-                x_scale_params['linscale'] = self.x_scale_linscale
+            if self.x_scale == 'symlog' and self.x_scale_linthresh: x_scale_params['linthresh'] = self.x_scale_linthresh
+            if self.x_scale == 'symlog' and self.x_scale_linscale: x_scale_params['linscale'] = self.x_scale_linscale
             pylab.xscale(self.x_scale, **x_scale_params)
 
         if self.y_scale:
             if self.y_scale_base:
                 y_scale_params['base'] = self.y_scale_base
-            if self.y_scale_base:
-                y_scale_params['linthresh'] = self.y_scale_linthresh
-            if self.y_scale_base:
-                y_scale_params['linscale'] = self.y_scale_linscale
+            if self.x_scale == 'symlog' and self.x_scale_linthresh: x_scale_params['linthresh'] = self.x_scale_linthresh
+            if self.x_scale == 'symlog' and self.x_scale_linscale: x_scale_params['linscale'] = self.x_scale_linscale
             pylab.yscale(self.y_scale, **y_scale_params)
 
         if not self.x_axis:
@@ -970,7 +967,8 @@ class StandardStyleLinePlot(StandardStyle):
             elif self.colors != None:
                 p['color'] = self.colors
             elif self.colors == None:
-                p['color'] = next(self.axis._get_lines.prop_cycler)['color']
+                prop_cycle = plt.rcParams['axes.prop_cycle']
+                p['color'] = next(iter(prop_cycle))['color']
 
             if type(self.linestyles) == list:
                 p['linestyle'] = self.linestyles[i]
